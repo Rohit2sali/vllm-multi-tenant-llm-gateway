@@ -38,12 +38,14 @@ You can spin up the entire gateway using the following Docker command. This comm
 
 
 # 1. Clone the repository
-git clone [https://github.com/Rohit2sali/vllm-multi-tenant-llm-gateway](https://github.com/Rohit2sali/vllm-multi-tenant-llm-gateway)
-cd multi-tenant-llm-gatewa
+git clone [https://github.com/Rohit2sali/vllm-multi-tenant-llm-gateway](https://github.com/Rohit2sali/vllm-multi-tenant-llm-gateway)  
+
+# 2. Direct to the main folder  
+cd multi-tenant-llm-gatewa  
 
 # 2. Download the Loras
 python download_loras.py
 
 # 3. Run the container
-sudo docker-compose up -d
+sudo docker-compose up 
 
