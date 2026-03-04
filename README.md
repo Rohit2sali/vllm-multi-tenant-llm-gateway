@@ -37,15 +37,24 @@ Running the Gateway
 You can spin up the entire gateway using the following Docker command. This command mounts a local data directory to persist your SQLite database and model weights, exposes port 8000, and grants the container access to all available GPUs.
 
 
-# 1. Clone the repository
-git clone [https://github.com/Rohit2sali/vllm-multi-tenant-llm-gateway](https://github.com/Rohit2sali/vllm-multi-tenant-llm-gateway)  
+## 🚀 Quick Start
 
-# 2. Direct to the main folder  
-cd multi-tenant-llm-gatewa  
+### 1. Clone the repository
+```bash
+git clone https://github.com/Rohit2sali/vllm-multi-tenant-llm-gateway.git
+```
 
-# 2. Download the Loras
+### 2. Navigate to the project directory
+```bash
+cd vllm-multi-tenant-llm-gateway
+```
+
+### 3. Download the LoRA adapters
+```bash
 python download_loras.py
+```
 
-# 3. Run the container
-sudo docker-compose up 
-
+### 4. Start the containers
+```bash
+sudo docker-compose up
+```
