@@ -20,6 +20,8 @@ services:
       # Map your server code for live-reloading
       - ./server:/app
       - ~/.cache/huggingface:/root/.cache/huggingface
+      # ADD THIS LINE: Map the root 'loras' folder to '/app/loras' inside the container
+      - ./loras:/loras
 
   frontend:
     build:
