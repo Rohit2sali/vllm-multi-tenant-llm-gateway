@@ -13,6 +13,7 @@ A high-performance, containerized API gateway for managing and serving Large Lan
 
 ## 🏗️ Architecture
 
+```mermaid
 flowchart TD
     %% Styling definitions
     classDef client fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px
@@ -58,7 +59,8 @@ flowchart TD
     
     vLLM -.->|Applies specific| LoRA
     
-    vLLM -->|8. Return LLM Response| UI  
+    vLLM -->|8. Return LLM Response| UI
+```
     
 
 🛠️ Technology Stack
