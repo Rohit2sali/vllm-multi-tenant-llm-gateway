@@ -13,7 +13,7 @@ A high-performance, containerized API gateway for managing and serving Large Lan
 
 ## 🏗️ Architecture
 
-![System Architecture](diagrams/architecture.png)
+![System Architecture](diagram/architecture.png)
     
 
 🛠️ Technology Stack
