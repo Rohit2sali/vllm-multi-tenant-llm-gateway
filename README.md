@@ -31,7 +31,8 @@ graph TD
     L1 -.-> Response
     L2 -.-> Response
     Response --> Gateway
-    Gateway --> Client ```
+    Gateway --> Client
+```
 
 
 🛠️ Technology Stack
