@@ -13,27 +13,53 @@ A high-performance, containerized API gateway for managing and serving Large Lan
 
 ## 🏗️ Architecture
 
-```mermaid
-graph TD
-    Client[Client App / User] -->|HTTP Request + API Key| Gateway[FastAPI Gateway]
-    Gateway --> Auth[SQLite DB: Auth & Limits]
-    Auth -- Validated --> Limiter[Rate Limiter]
-    Limiter -- Allowed --> Scheduler[Request Scheduler]
-    Scheduler --> vLLM[vLLM Engine]
-    
-    subgraph GPU VRAM
-        vLLM --> Base[Base Model]
-        vLLM --> L1[LoRA Adapter A]
-        vLLM --> L2[LoRA Adapter B]
-    end
-    
-    Base --> Response[Generated Text]
-    L1 -.-> Response
-    L2 -.-> Response
-    Response --> Gateway
-    Gateway --> Client
-```
+flowchart TD
+    %% Styling definitions
+    classDef client fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px
+    classDef api fill:#e3f2fd,stroke:#1e88e5,stroke-width:2px
+    classDef storage fill:#fff3e0,stroke:#fb8c00,stroke-width:2px
+    classDef management fill:#e8f5e9,stroke:#43a047,stroke-width:2px
+    classDef inference fill:#ffebee,stroke:#e53935,stroke-width:2px
 
+    %% Components
+    UI([Frontend UI / User]):::client
+    DB[(SQLite Database\nUsers & API Keys)]:::storage
+    FastAPI[FastAPI Wrapper]:::api
+    
+    subgraph Request_Management [Request Management Zone]
+        Scheduler{Scheduler}:::management
+        Limiter[Concurrent Limiter]:::management
+        Q1[Queue 1]:::management
+        Q2[Queue 2]:::management
+        Q3[Queue 3]:::management
+    end
+
+    subgraph Inference_Zone [Inference Zone]
+        vLLM[vLLM Engine]:::inference
+        LoRA[[LoRA Adapters]]:::inference
+    end
+
+    %% Workflow Connections
+    UI -->|1. Generate User ID & API Key| DB
+    UI -->|2. Input API Key & Submit Prompt| FastAPI
+    
+    FastAPI -->|3. Fetch Tier & LoRA Key| DB
+    FastAPI -->|4. Forward Prompt + User Metadata| Scheduler
+    
+    Scheduler <-->|5. Check User Limits| Limiter
+    
+    Scheduler -->|6. Assign to Queue based on tier/traffic| Q1
+    Scheduler -->|6. Assign to Queue based on tier/traffic| Q2
+    Scheduler -->|6. Assign to Queue based on tier/traffic| Q3
+    
+    Q1 -->|7. Dispatch Request| vLLM
+    Q2 -->|7. Dispatch Request| vLLM
+    Q3 -->|7. Dispatch Request| vLLM
+    
+    vLLM -.->|Applies specific| LoRA
+    
+    vLLM -->|8. Return LLM Response| UI  
+    
 
 🛠️ Technology Stack
 Inference Engine: vLLM
