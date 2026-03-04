@@ -14,6 +14,10 @@ from typing import Optional
 # 1. Define your request schema
 import secrets
 from database import get_user_id, init_db, create_new_user 
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LORA_DIR = os.path.join(BASE_DIR, "loras")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -49,7 +53,7 @@ async def register_user(request: RegisterRequest):
         # Also add them to the in-memory tenant_lora_mapping so they can generate immediately 
         # without needing a server restart (since your dict is hardcoded right now).
         tenant_lora_mapping[request.user_id] = {
-            "path": r"/app/loras/function_adapter", 
+            "path": os.path.join(LORA_DIR, "function_adapter"), 
             "id": 1
         }
         return {"user_id": request.user_id, "api_key": new_api_key}
@@ -72,19 +76,19 @@ scheduler = Scheduler(engine, limiter)
 
 tenant_lora_mapping = {
    "admin1": {
-        "path": r"/app/loras/function_adapter", 
+        "path": os.path.join(LORA_DIR, "function_adapter"), 
         "id": 1 },
     "admin2": {
-        "path": r"/app/loras/general_adapter", 
+        "path": os.path.join(LORA_DIR, "general_adapter"), 
         "id": 2 },
     "admin3": {
-        "path": r"/app/loras/journal_adapter",
+        "path": os.path.join(LORA_DIR, "journal_adapter"),
         "id": 3},
     "admin4": {
-        "path": r"/app/loras/tool_adapter",
+        "path": os.path.join(LORA_DIR, "tool_adapter"),
         "id": 4},
     "admin5": {
-        "path": r"/app/loras/tool_adapter",
+        "path": os.path.join(LORA_DIR, "tool_adapter"),
         "id": 5
     }
 }
@@ -142,6 +146,12 @@ async def generate(request: GenerateRequest, credentials : HTTPAuthorizationCred
 
 
 #  to stop the system :- sudo docker-compose down 
+
+# sudo docker-compose up
+
+
+#  to build from scratch or after making changes to code
+# sudo docker-compose up --build
 
 # sudo docker-compose up
 
