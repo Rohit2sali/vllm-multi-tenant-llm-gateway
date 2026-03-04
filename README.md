@@ -38,50 +38,12 @@ You can spin up the entire gateway using the following Docker command. This comm
 
 
 # 1. Clone the repository
-git clone [https://github.com/yourusername/multi-tenant-llm-gateway.git](https://github.com/yourusername/multi-tenant-llm-gateway.git)
-cd multi-tenant-llm-gateway
+git clone [https://github.com/Rohit2sali/vllm-multi-tenant-llm-gateway](https://github.com/Rohit2sali/vllm-multi-tenant-llm-gateway)
+cd multi-tenant-llm-gatewa
 
-# 2. Build the Docker image
-docker build -t llm-gateway .
-
-# 3. Run the container
-docker run -d \
-  --name llm-gateway-instance \
-  --gpus all \
-  -p 8000:8000 \
-  -v $(pwd)/data:/app/data \
-  -v /path/to/your/models:/app/models \
-  llm-gateway
-
-
-# 1. Clone the repository
-git clone [https://github.com/yourusername/multi-tenant-llm-gateway.git](https://github.com/yourusername/multi-tenant-llm-gateway.git)
-cd multi-tenant-llm-gateway
-
-# 2. Build the Docker image
-docker build -t llm-gateway .
+# 2. Download the Loras
+python download_loras.py
 
 # 3. Run the container
-docker run -d \
-  --name llm-gateway-instance \
-  --gpus all \
-  -p 8000:8000 \
-  -v $(pwd)/data:/app/data \
-  -v /path/to/your/models:/app/models \
-  llm-gateway
+sudo docker-compose up -d
 
-📖 API Usage Example
-Once the container is running, you can interact with the gateway.
-
-1. Generate Text (Specifying a LoRA)
-
-Bash
-curl -X POST "http://localhost:8000/v1/completions" \
-     -H "Authorization: Bearer YOUR_API_KEY" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "model": "base-model-name",
-           "lora_name": "tenant-specific-lora",
-           "prompt": "Explain the concept of PagedAttention.",
-           "max_tokens": 200
-         }'
