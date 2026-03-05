@@ -7,7 +7,6 @@ class Scheduler:
     def __init__(self, engine, limiter):
         self.engine = engine
         self.limiter = limiter
-        # DO NOT initialize asyncio objects here. Set them to None.
         self.queue_short = None
         self.queue_medium = None 
         self.queue_long = None
@@ -16,17 +15,13 @@ class Scheduler:
 
     async def start(self):
         """Called by FastAPI when the server boots up."""
-        # Now we are safely inside the Uvicorn event loop
         self.queue_short = asyncio.Queue()
         self.queue_medium = asyncio.Queue()
         self.queue_long = asyncio.Queue()
         
-        # Load the tokenizer once during startup
         self.tokenizer = AutoTokenizer.from_pretrained("EleutherAI/pythia-70m")
         
-        # Start the background loop safely
         self.background_task = asyncio.create_task(self.dispatch_loop())
-        print("Scheduler started successfully.")
 
     async def dispatch_loop(self):
         weights = {"short": 5, "medium": 3, "long": 1}
@@ -72,7 +67,6 @@ class Scheduler:
                                                 lora_path=lora_path,
                                                 lora_id=lora_id)
             
-            # 2. Set the final text string to the future
             future.set_result(result)
 
             output_tokens = int(len(self.tokenizer(result)["input_ids"]))
@@ -131,7 +125,6 @@ class Scheduler:
         prompt_tokens = int(len(encoded_input["input_ids"]))
 
         response_queue = asyncio.Queue()
-        
 
         request_data = {
             "user_id": user_id,
@@ -166,7 +159,6 @@ class Scheduler:
     async def submit(self, user_id, api_key, prompt, max_tokens=128, ignore_eos=False, lora_path=None, lora_id=None):
         await self.limiter.check_and_acquire(user_id, api_key)
 
-        # Use get_running_loop() instead of get_event_loop()
         loop = asyncio.get_running_loop()
         future = loop.create_future()
         
