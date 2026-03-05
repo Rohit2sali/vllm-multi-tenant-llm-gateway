@@ -121,6 +121,3 @@ async def generate(request: GenerateRequest, credentials : HTTPAuthorizationCred
                                         lora_id=lora_id
                                         )
         return {"response": output}
-
-#  to build from scratch or after making changes to code
-# sudo docker-compose up --build
