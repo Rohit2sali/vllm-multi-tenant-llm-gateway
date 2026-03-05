@@ -47,11 +47,9 @@ def create_new_user(user_id: str, api_key: str, tier: str = "premium", lora_id: 
         conn.commit()
         return True
     except sqlite3.IntegrityError:
-        # Happens if the API key already exists (very rare with random generation)
         return False
     finally:
         conn.close()
-
 
 def update_user_tokens(user_id, no_of_tokens):
     conn = get_connection()
@@ -64,7 +62,6 @@ def update_user_tokens(user_id, no_of_tokens):
 
     conn.commit()
     conn.close()
-
 
 def add_user_info(user_id, api_key):
     conn = get_connection()
