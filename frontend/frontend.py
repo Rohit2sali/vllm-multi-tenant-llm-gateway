@@ -2,7 +2,6 @@ import streamlit as st
 import requests
 import json
 
-# 1. Page Config MUST be the very first Streamlit command
 st.set_page_config(page_title="vLLM Multi-Tenant UI", layout="centered")
 
 st.title("🤖 vLLM Gateway Interface")
@@ -40,12 +39,10 @@ with st.sidebar:
     
     st.divider()
     
-    # NEW: Final Save Button logic
     if st.button("💾 Save Configuration", use_container_width=True):
         if not api_key:
             st.warning("⚠️ Please enter an API Key before saving.")
         else:
-            # We save these to session_state to confirm they are locked in
             st.session_state['saved_api_key'] = api_key
             st.session_state['saved_user_id'] = user_id_field
             st.session_state['saved_max_tokens'] = max_tokens
@@ -68,7 +65,6 @@ if prompt := st.chat_input("Message the LLM..."):
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Prepare Request (Uses the sidebar variables directly)
     url = "http://server:8000/generate"
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -81,13 +77,11 @@ if prompt := st.chat_input("Message the LLM..."):
         "stream": True
     }
 
-    # Assistant Response
     with st.chat_message("assistant"):
         response_placeholder = st.empty()
         full_response = ""
         
         try:
-            # Connect to your FastAPI server
             with requests.post(url, headers=headers, json=payload, stream=True) as r:
                 if r.status_code == 401:
                     st.error("Invalid API Key. Please check the sidebar.")
@@ -105,7 +99,6 @@ if prompt := st.chat_input("Message the LLM..."):
                                     chunk = json.loads(data_str)
                                     if "token" in chunk:
                                         full_response += chunk["token"]
-                                        # Use a cursor effect for a "live" feel
                                         response_placeholder.markdown(full_response + "▌")
                                 except json.JSONDecodeError:
                                     continue
