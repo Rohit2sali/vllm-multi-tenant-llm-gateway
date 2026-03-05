@@ -2,16 +2,11 @@ from fastapi import FastAPI, HTTPException, Depends, Security
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-# from project.server.vllm_engine import VLLMEngine
-# from project.server.scheduler import Scheduler
-# from project.server.limits import RateLimiter
 from vllm_engine import VLLMEngine
 from scheduler import Scheduler
 from limits import RateLimiter
 from contextlib import asynccontextmanager
 from typing import Optional
-# from database import get_user_id, init_db
-# 1. Define your request schema
 import secrets
 from database import get_user_id, init_db, create_new_user 
 import os
@@ -34,8 +29,6 @@ app = FastAPI(lifespan=lifespan)
 class RegisterRequest(BaseModel):
     user_id: str
 
-# ... existing code ...
-
 @app.post("/register")
 async def register_user(request: RegisterRequest):
     # Generate a random 16-character hex string for the API key
@@ -50,8 +43,6 @@ async def register_user(request: RegisterRequest):
     )
     
     if success:
-        # Also add them to the in-memory tenant_lora_mapping so they can generate immediately 
-        # without needing a server restart (since your dict is hardcoded right now).
         tenant_lora_mapping[request.user_id] = {
             "path": os.path.join(LORA_DIR, "function_adapter"), 
             "id": 1
@@ -59,7 +50,6 @@ async def register_user(request: RegisterRequest):
         return {"user_id": request.user_id, "api_key": new_api_key}
     else:
         raise HTTPException(status_code=400, detail="Could not create user.")
-
 
 class GenerateRequest(BaseModel): 
     user_id: str
@@ -71,8 +61,6 @@ class GenerateRequest(BaseModel):
 engine = VLLMEngine() 
 limiter = RateLimiter()
 scheduler = Scheduler(engine, limiter)
-
-
 
 tenant_lora_mapping = {
    "admin1": {
@@ -133,28 +121,6 @@ async def generate(request: GenerateRequest, credentials : HTTPAuthorizationCred
                                         lora_id=lora_id
                                         )
         return {"response": output}
-
-# uvicorn app:app --host 0.0.0.0 --port 8000
-
-# nvidia-smi to check gpu usage
-# kill -9 <PID> to kill specific process by it's PID no
-# sudo docker logs -f vllm_gateway
-
-# to start the system 
-# cd /home/salir/project
-# sudo docker-compose up -d
-
-
-#  to stop the system :- sudo docker-compose down 
-
-# sudo docker-compose up
-
-
-#  to build from scratch or after making changes to code
-# sudo docker-compose up --build
-
-# sudo docker-compose up
-
 
 #  to build from scratch or after making changes to code
 # sudo docker-compose up --build
